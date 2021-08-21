@@ -4,6 +4,7 @@ npm-debug.log*
 .DS_Store
 
 coverage
+cache
 node_modules
 build
 public/static

@@ -1,1 +1,0 @@
-{"ast":null,"code":"export const paths = ['/', 'about'];","map":{"version":3,"sources":["/Users/griecomv/unet-bingo/with-react-router/src/router/config.js"],"names":["paths"],"mappings":"AAAA,OAAO,MAAMA,KAAK,GAAG,CAAC,GAAD,EAAM,OAAN,CAAd","sourcesContent":["export const paths = ['/', 'about'];\n"]},"metadata":{},"sourceType":"module"}

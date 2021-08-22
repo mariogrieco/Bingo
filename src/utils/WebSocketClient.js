@@ -2,6 +2,8 @@ import {
   cards_options,
   card_selected,
   players_count,
+  game_time,
+  bingo_callNumber,
 } from '../Store/actions'
 
 export default class WebSocketClient {
@@ -10,6 +12,8 @@ export default class WebSocketClient {
         this.io = io;
         this.dispatch = dispatch;
 
+        socket.on(bingo_callNumber, nextNum => this.callNumber(nextNum));
+        socket.on(game_time, countdown => this.gameTime(countdown));
         socket.on(players_count, count => this.playersCount(count));
         socket.on(cards_options, param => this.setCardsOptions(param));
         socket.on(card_selected, payload => this.cardSelected({
@@ -45,6 +49,20 @@ export default class WebSocketClient {
           type: cards_options,
           payload: param
         })
+      }
+
+      gameTime (countdown) {
+        this.dispatch({
+          type: game_time,
+          payload: countdown
+        });
+      }
+
+      callNumber (nextNum) {
+        this.dispatch({
+          type: bingo_callNumber,
+          payload: nextNum,
+        });
       }
 
       selectCard (card, uuid) {

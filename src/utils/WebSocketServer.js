@@ -2,12 +2,20 @@ import {
     cards_options,
     card_selected,
     players_count,
+    game_time,
+    bingo_callNumber,
 } from '../Store/actions'
 import { crearCarton } from './crearCarton'
+import { getOneFromMemory } from './getOneFromMemory'
 
 const memory = {
-  count: 0
+  cartones: {},
+  count: 0,
+  numbers: [],
 }
+
+const TIME_COUNTDOWN = 10 // s
+let GAME_TIME_COUNTDOWN = TIME_COUNTDOWN // s
 
 export default class WebSocketServer {
     constructor(io, socket) {
@@ -29,7 +37,7 @@ export default class WebSocketServer {
       }
 
       selectCard (payload) {
-        memory[payload.uuid] = {
+        memory.cartones[payload.uuid] = {
           ...payload,
           socketId: this.socket.id
         }
@@ -37,8 +45,8 @@ export default class WebSocketServer {
         memory.count = memory.count + 1
 
         this.socket.emit(card_selected, {
-          uuid:  memory[payload.uuid].uuid,
-          card:  memory[payload.uuid].card
+          uuid:  memory.cartones[payload.uuid].uuid,
+          card:  memory.cartones[payload.uuid].card
         })
 
         this.playersCount()
@@ -46,6 +54,37 @@ export default class WebSocketServer {
 
       playersCount () {
         this.io.emit(players_count, memory.count)
+
+        if (memory.count > 1) {
+          this.gameTime()
+        }
+      }
+
+      gameTime () {
+        console.log('gameTime ')
+
+        const refInterval = setInterval(() => {
+          if (GAME_TIME_COUNTDOWN - 1 < 0) {
+            GAME_TIME_COUNTDOWN = TIME_COUNTDOWN;
+            this.io.emit(game_time, null);
+            this.callNumber()
+            return clearInterval(refInterval);
+          }
+          GAME_TIME_COUNTDOWN = GAME_TIME_COUNTDOWN -1;
+          this.io.emit(game_time, GAME_TIME_COUNTDOWN);
+        }, 1000)
+      }
+
+      callNumber () {
+        console.log('memory.numbers: ', memory.numbers)
+        if (memory.numbers.length >= 10) return
+
+        const nextNumner = getOneFromMemory(memory.cartones, memory.numbers)
+        memory.numbers.push(nextNumner)
+        this.io.emit(bingo_callNumber, nextNumner)
+        setTimeout(() => {
+          this.callNumber()
+        }, 2000)
       }
 
       connection () {
@@ -53,9 +92,9 @@ export default class WebSocketServer {
       }
 
       disconnect () {
-        const memoryKey = Object.keys(memory).find(key => memory[key].socketId === this.socket.id)
+        const memoryKey = Object.keys(memory.cartones).find(key => memory.cartones[key].socketId === this.socket.id)
         if (memoryKey) {
-          delete memory[memoryKey]
+          delete memory.cartones[memoryKey]
           memory.count = memory.count - 1
           this.playersCount()
         }

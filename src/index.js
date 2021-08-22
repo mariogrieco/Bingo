@@ -1,24 +1,10 @@
-import socket from "socket.io";
-import WebSocketServer from "./utils/WebSocketServer";
-
-let app = require('./server.js').default;
-let http = require('http').createServer(app);
-
-const io = socket(http, {
-  cors: {
-    origin: '*',
-  }
-});
-
-io.on("connection", socket => {
-    new WebSocketServer(io, socket)
-});
+let app = require('./server').default;
 
 if (module.hot) {
-  module.hot.accept('./server.js', function() {
-    console.log('🔁  HMR Reloading `./server.js`...');
+  module.hot.accept('./server', function() {
+    console.log('🔁  HMR Reloading `./server`...');
     try {
-      app = require('./server.js').default;
+      app = require('./server').default;
     } catch (error) {
       console.error(error);
     }
@@ -28,7 +14,7 @@ if (module.hot) {
 
 const port = 3004;
 
-export default http.listen(port, function(err) {
+export default app.listen(port, function(err) {
     if (err) {
       console.error(err);
       return;

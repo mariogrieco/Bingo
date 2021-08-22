@@ -30,6 +30,8 @@ const Home = () => {
        Players {state.count}
      </h1>
 
+     <h3>{state.game_time != null ? `${state.game_time}s to start the game` : ''}</h3>
+
       {!state.card_selected && state.cards_options.map((card, key) => (
         <div className='card' key={key} onClick={handleOnSelectCard(card)}>
           {card.map((values, key) => (
@@ -45,11 +47,14 @@ const Home = () => {
     {state.card_selected &&
       <>
           {state.card_selected.uuid}
-          <div className='card'>
+          <div className='card selected'>
             {state.card_selected.card.map((values, key) => (
                 <div className='card-row' key={key}>
                   {values.map((value, key) => (
-                    <span className='card-value' key={key}>{value}</span>
+                    <span className={`
+                        card-value
+                        ${state.numbers.indexOf(value) != -1 ? 'active' : ''}
+                    `} key={key}>{value}</span>
                   ))}
                 </div>
             ))}

@@ -3,6 +3,8 @@ import express from 'express';
 import { renderToString } from 'react-dom/server';
 import { api } from './api'
 import cors from "cors";
+import socket from "socket.io";
+import WebSocketServer from "./utils/WebSocketServer";
 
 import Router from './Router';
 import { StaticRouter } from 'react-router-dom';
@@ -12,6 +14,19 @@ import { client_routes } from './Router/config'
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 
 const server = express();
+
+let http = require('http').createServer(server);
+
+const io = socket(http, {
+  cors: {
+    origin: '*',
+  }
+});
+
+io.on("connection", socket => {
+    new WebSocketServer(io, socket)
+});
+
 
 export const renderApp = (req, res) => {
   const context = {};
@@ -62,4 +77,4 @@ server
     res.send(html);
   });
 
-export default server;
+export default http;

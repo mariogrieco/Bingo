@@ -1,8 +1,8 @@
 import socket from "socket.io";
 import WebSocketServer from "./utils/WebSocketServer";
 
-const app = require('./server.js').default;
-const http = require('http').createServer(app);
+let app = require('./server.js').default;
+let http = require('http').createServer(app);
 
 const io = socket(http);
 

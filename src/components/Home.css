@@ -1,0 +1,27 @@
+.card-value {
+    border: 1px solid #434343;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.card {
+    opacity: 0.5;
+    margin: 1em;
+    transition: all 0.2s linear;
+    float: left;
+    cursor: pointer;
+}
+
+.card:hover {
+    opacity: 1;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
 import { api } from './api'
+import cors from "cors";
 
 import Router from './Router';
 import { StaticRouter } from 'react-router-dom';
@@ -48,6 +49,7 @@ export const renderApp = (req, res) => {
 server
   .disable('x-powered-by')
   .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
+  .use(cors())
   .use('/v1', api)
   .get(client_routes, (req, res) => {
     const { html, context } = renderApp(req, res);

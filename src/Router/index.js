@@ -1,17 +1,15 @@
-import { Route, Switch } from "react-router-dom";
-
-import Home from "../components/Home";
-import About from "../components/About";
-
 import React from "react";
+import { Route, Switch } from "react-router-dom";
+import { StoreProvider } from "../Store";
+import Home from "../components/Home";
+
 const Router = () => {
   return (
-    <>
+    <StoreProvider>
       <Switch>
         <Route path="/" exact component={Home} />
-        <Route path="/about" component={About} />
       </Switch>
-    </>
+    </StoreProvider>
   );
 };
 

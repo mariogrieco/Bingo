@@ -1,3 +1,48 @@
+const complexShapes = [
+        [
+            [1, 1, 0, 0, 0],
+            [1, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 1, 1],
+            [0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [1, 1, 0, 0, 0],
+            [1, 1, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1],
+            [0, 0, 0, 1, 1],
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1],
+            [0, 0, 0, 1, 1],
+        ],
+        [
+            [1, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 1],
+        ]
+]
+
 export function checkWinners (carton, numbers) {
     let winner = true
 
@@ -73,6 +118,27 @@ export function checkWinners (carton, numbers) {
 
         if (winner) break
    }
+
+
+   if (winner) return true
+
+   for (let shapeIndex = 0; shapeIndex < complexShapes.length; shapeIndex++) {
+       const shape = complexShapes[shapeIndex];
+       winner = true
+
+       for (let cIndex = 0; cIndex < carton.length; cIndex++) {
+            const row = carton[cIndex];
+            for (let rI = 0; rI < row.length; rI++) {
+                const element = row[rI];
+                if (shape[cIndex][rI] === 1 && numbers.indexOf(element) === -1) {
+                    winner = false
+                }
+            }
+        }
+        if (winner) break
+   }
+
+   if (winner) return true
 
     return winner
 }

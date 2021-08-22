@@ -4,10 +4,13 @@ import {
     players_count,
     game_time,
     bingo_callNumber,
+    game_wait,
 } from './actions'
 
 export function reducer (state, action) {
     switch (action.type) {
+        case game_wait:
+            return { ...state, game_wait: action.payload }
         case bingo_callNumber:
             return { ...state, numbers: [...state.numbers, action.payload] }
         case game_time:

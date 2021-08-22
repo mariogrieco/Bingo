@@ -22,10 +22,11 @@ const Home = () => {
     return () => webSocketClient.close()
   }, [])
 
-  console.log('state: ', state)
-
   return (
     <>
+    <strong>
+      game_wait: {state.game_wait ? 'true' : 'false'}
+    </strong>
      <h1>
        Players {state.count}
      </h1>

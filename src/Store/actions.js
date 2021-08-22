@@ -5,3 +5,4 @@ export const game_time = 'game:time';
 export const cards_options = 'cards:options';
 export const player_winner = 'player:winner';
 export const players_winner = 'player:winner';
+export const game_wait = 'game:wait';

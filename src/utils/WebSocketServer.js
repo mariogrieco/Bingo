@@ -5,21 +5,31 @@ import {
     game_time,
     bingo_callNumber,
     player_winner,
-    players_winner
+    players_winner,
+    game_wait,
 } from '../Store/actions'
 import { crearCarton } from './crearCarton'
 import { getOneFromMemory } from './getOneFromMemory'
 import { checkWinners } from './winnervalidators'
 
-const memory = {
+const initialState = {
   cartones: {},
   count: 0,
   winner: null,
   numbers: ['X'],
+  running: false,
+}
+
+let memory = {
+  cartones: {},
+  count: 0,
+  winner: null,
+  numbers: ['X'],
+  running: false,
 }
 
 const MIN_TO_COUNTDOWN = 3;
-const TIME_COUNTDOWN = 2 // s
+const TIME_COUNTDOWN = 10 // s
 let GAME_TIME_COUNTDOWN = TIME_COUNTDOWN // s
 
 export default class WebSocketServer {
@@ -53,6 +63,8 @@ export default class WebSocketServer {
       }
 
       selectCard (payload) {
+        if (memory.running) return
+
         memory.cartones[payload.userId] = {
           ...payload,
           socketId: this.socket.id,
@@ -67,19 +79,25 @@ export default class WebSocketServer {
         })
 
         this.playersCount()
+
+        if (memory.count >= MIN_TO_COUNTDOWN) {
+          this.gameTime(true)
+          this.gameWait(true)
+          memory.running = true
+        }
+      }
+
+      gameWait (boolean) {
+        this.io.emit(game_wait, boolean)
       }
 
       playersCount () {
         this.io.emit(players_count, memory.count)
-
-        if (memory.count >= MIN_TO_COUNTDOWN) {
-          this.gameTime(true)
-        } else {
-          this.gameTime(false)
-        }
       }
 
       checkForWinner () {
+        let winner = false
+
         const numbers = memory.numbers
         const cartones = Object.keys(memory.cartones).map(key => {
           return {
@@ -91,43 +109,44 @@ export default class WebSocketServer {
         });
 
         cartones.forEach(({ carton, key }) => {
-          const winner = checkWinners(carton, numbers)
+          winner = checkWinners(carton, numbers)
+
           if (winner) {
             console.log('gano!')
-            memory.winner = key
+            memory = { ...initialState, count: memory.count, running: false }
             this.winner(key)
+            this.gameTime(false)
+            this.gameWait(false)
           }
         })
+
+        return winner
       }
 
+      gameTime (running) {
+        if (!running) return this.io.emit(game_time, null);
 
-      gameTime (status) {
-        if (status) {
           const refInterval = setInterval(() => {
+            if (memory.winner)  return clearInterval(refInterval);
+
             if (GAME_TIME_COUNTDOWN - 1 < 0) {
               GAME_TIME_COUNTDOWN = TIME_COUNTDOWN;
-              this.io.emit(game_time, null);
               this.callNumber()
               return clearInterval(refInterval);
             }
+
             GAME_TIME_COUNTDOWN = GAME_TIME_COUNTDOWN -1;
             this.io.emit(game_time, GAME_TIME_COUNTDOWN);
           }, 1000)
-        } else {
-          // do not stop game if already started
-
-          GAME_TIME_COUNTDOWN = TIME_COUNTDOWN;
-          this.io.emit(game_time, null);
-        }
       }
 
       callNumber () {
-        if (memory.winner) return
-
         const nextNumner = getOneFromMemory(memory.cartones, memory.numbers)
         memory.numbers.push(nextNumner)
-        this.checkForWinner()
         this.io.emit(bingo_callNumber, nextNumner)
+
+        if (this.checkForWinner()) return
+
         setTimeout(() => {
           this.callNumber()
         }, 2000)

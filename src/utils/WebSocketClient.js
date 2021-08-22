@@ -5,6 +5,7 @@ import {
   game_time,
   bingo_callNumber,
   players_winner,
+  game_wait
 } from '../Store/actions'
 
 export default class WebSocketClient {
@@ -18,6 +19,7 @@ export default class WebSocketClient {
           alert(value)
         });
         socket.on(bingo_callNumber, nextNum => this.callNumber(nextNum));
+        socket.on(game_wait, boolean => this.gameWait(boolean))
         socket.on(game_time, countdown => this.gameTime(countdown));
         socket.on(players_count, count => this.playersCount(count));
         socket.on(cards_options, param => this.setCardsOptions(param));
@@ -33,6 +35,14 @@ export default class WebSocketClient {
 
       close () {
           this.socket.close()
+      }
+
+
+      gameWait (boolean) {
+        this.dispatch({
+          type: game_wait,
+          payload: boolean
+        })
       }
 
       playersCount (count) {

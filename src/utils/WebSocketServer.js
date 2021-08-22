@@ -11,9 +11,12 @@ import { getOneFromMemory } from './getOneFromMemory'
 const memory = {
   cartones: {},
   count: 0,
-  numbers: [],
+  numbers: [
+    'X'
+  ],
 }
 
+const MIN_TO_COUNTDOWN = 3;
 const TIME_COUNTDOWN = 10 // s
 let GAME_TIME_COUNTDOWN = TIME_COUNTDOWN // s
 
@@ -27,6 +30,8 @@ export default class WebSocketServer {
             crearCarton(),
             crearCarton()
         ]);
+
+        this.playersCount()
 
         socket.on(card_selected, payload => this.selectCard(payload))
         socket.on(cards_options, payload => this.setCardsOptions(payload));
@@ -55,28 +60,32 @@ export default class WebSocketServer {
       playersCount () {
         this.io.emit(players_count, memory.count)
 
-        if (memory.count > 1) {
-          this.gameTime()
+        if (memory.count >= MIN_TO_COUNTDOWN) {
+          this.gameTime(true)
+        } else {
+          this.gameTime(false)
         }
       }
 
-      gameTime () {
-        console.log('gameTime ')
-
-        const refInterval = setInterval(() => {
-          if (GAME_TIME_COUNTDOWN - 1 < 0) {
-            GAME_TIME_COUNTDOWN = TIME_COUNTDOWN;
-            this.io.emit(game_time, null);
-            this.callNumber()
-            return clearInterval(refInterval);
-          }
-          GAME_TIME_COUNTDOWN = GAME_TIME_COUNTDOWN -1;
-          this.io.emit(game_time, GAME_TIME_COUNTDOWN);
-        }, 1000)
+      gameTime (status) {
+        if (status) {
+          const refInterval = setInterval(() => {
+            if (GAME_TIME_COUNTDOWN - 1 < 0) {
+              GAME_TIME_COUNTDOWN = TIME_COUNTDOWN;
+              this.io.emit(game_time, null);
+              this.callNumber()
+              return clearInterval(refInterval);
+            }
+            GAME_TIME_COUNTDOWN = GAME_TIME_COUNTDOWN -1;
+            this.io.emit(game_time, GAME_TIME_COUNTDOWN);
+          }, 1000)
+        } else {
+          GAME_TIME_COUNTDOWN = TIME_COUNTDOWN;
+          this.io.emit(game_time, null);
+        }
       }
 
       callNumber () {
-        console.log('memory.numbers: ', memory.numbers)
         if (memory.numbers.length >= 10) return
 
         const nextNumner = getOneFromMemory(memory.cartones, memory.numbers)

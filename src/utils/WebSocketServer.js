@@ -54,8 +54,10 @@ export default class WebSocketServer {
 
       disconnect () {
         const memoryKey = Object.keys(memory).find(key => memory[key].socketId === this.socket.id)
-        delete memory[memoryKey]
-        memory.count = memory.count - 1
-        this.playersCount()
+        if (memoryKey) {
+          delete memory[memoryKey]
+          memory.count = memory.count - 1
+          this.playersCount()
+        }
       }
 }

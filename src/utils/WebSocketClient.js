@@ -1,5 +1,7 @@
 import {
-  cards_options
+  cards_options,
+  card_selected,
+  players_count,
 } from '../Store/actions'
 
 export default class WebSocketClient {
@@ -8,8 +10,12 @@ export default class WebSocketClient {
         this.io = io;
         this.dispatch = dispatch;
 
+        socket.on(players_count, count => this.playersCount(count));
         socket.on(cards_options, param => this.setCardsOptions(param));
-
+        socket.on(card_selected, payload => this.cardSelected({
+          card: payload.card,
+          uuid: payload.uuid,
+        }));
         socket.on('disconnect', () => this.disconnect());
         socket.on('connect_error', (err) => {
           console.log(`connect_error due to ${err.message}`);
@@ -20,10 +26,31 @@ export default class WebSocketClient {
           this.socket.close()
       }
 
+      playersCount (count) {
+        this.dispatch({
+          type: players_count,
+          payload: count
+        })
+      }
+
+      cardSelected (param) {
+        this.dispatch({
+          type: card_selected,
+          payload: param
+        })
+      }
+
       setCardsOptions (param) {
         this.dispatch({
           type: cards_options,
           payload: param
+        })
+      }
+
+      selectCard (card, uuid) {
+        this.socket.emit(card_selected, {
+          card,
+          uuid
         })
       }
 

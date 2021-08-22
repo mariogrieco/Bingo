@@ -4,6 +4,7 @@ import {
   players_count,
   game_time,
   bingo_callNumber,
+  players_winner,
 } from '../Store/actions'
 
 export default class WebSocketClient {
@@ -12,13 +13,17 @@ export default class WebSocketClient {
         this.io = io;
         this.dispatch = dispatch;
 
+        socket.on(players_winner, value => {
+          console.log('here winner');
+          alert(value)
+        });
         socket.on(bingo_callNumber, nextNum => this.callNumber(nextNum));
         socket.on(game_time, countdown => this.gameTime(countdown));
         socket.on(players_count, count => this.playersCount(count));
         socket.on(cards_options, param => this.setCardsOptions(param));
         socket.on(card_selected, payload => this.cardSelected({
           card: payload.card,
-          uuid: payload.uuid,
+          userId: payload.uuid,
         }));
         socket.on('disconnect', () => this.disconnect());
         socket.on('connect_error', (err) => {
@@ -68,7 +73,7 @@ export default class WebSocketClient {
       selectCard (card, uuid) {
         this.socket.emit(card_selected, {
           card,
-          uuid
+          userId: uuid
         })
       }
 

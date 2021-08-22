@@ -46,7 +46,7 @@ const Home = () => {
 
     {state.card_selected &&
       <>
-          {state.card_selected.uuid}
+          {state.card_selected.userId}
           <div className='card selected'>
             {state.card_selected.card.map((values, key) => (
                 <div className='card-row' key={key}>

@@ -5,7 +5,7 @@ export function getOneFromMemory (cartones = {}, numeros = []) {
         }, [])
 
         return [...a, ...numbers]
-    }, [])
+    }, []).filter(num => numeros.indexOf(num) === -1)
 
-    return numbers.filter(num => numeros.indexOf(num) === -1)[0]
+    return numbers[Math.round(Math.random() * numbers.length) % numbers.length]
 }

@@ -27,12 +27,14 @@ const Home = () => {
     <strong>
       game_wait: {state.game_wait ? 'true' : 'false'}
     </strong>
+
      <h1>
        Players {state.count}
      </h1>
 
      <h3>{state.game_time != null ? `${state.game_time}s to start the game` : ''}</h3>
 
+    <div className='card-rows'>
       {!state.card_selected && state.cards_options.map((card, key) => (
         <div className='card' key={key} onClick={handleOnSelectCard(card)}>
           {card.map((values, key) => (
@@ -44,9 +46,10 @@ const Home = () => {
           ))}
         </div>
       ))}
+    </div>
 
     {state.card_selected &&
-      <>
+      <div>
           {state.card_selected.userId}
           <div className='card selected'>
             {state.card_selected.card.map((values, key) => (
@@ -60,8 +63,16 @@ const Home = () => {
                 </div>
             ))}
           </div>
-      </>
+      </div>
     }
+
+      <div>
+        <hr />
+        <h2>Cantos:</h2>
+          {state.numbers.map(num => (
+            <div className='cantos-coso' key={num}>{num}</div>
+          ))}
+      </div>
     </>
   );
 };

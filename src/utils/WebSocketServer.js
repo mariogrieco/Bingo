@@ -113,7 +113,7 @@ export default class WebSocketServer {
 
           if (winner) {
             console.log('gano!')
-            memory = { ...initialState, count: 0, running: false }
+            memory = { ...initialState, count: 0, running: false, winner: true }
             this.winner(key)
             this.gameTime(false)
             this.gameWait(false)
@@ -124,7 +124,9 @@ export default class WebSocketServer {
       }
 
       gameTime (running) {
-        if (!running) return this.io.emit(game_time, null);
+          if (!running) {
+            this.io.emit(game_time, null);
+          }
 
           const refInterval = setInterval(() => {
             if (memory.winner)  return clearInterval(refInterval);

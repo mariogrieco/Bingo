@@ -16,7 +16,7 @@ const Home = () => {
   }, [socket])
 
   useEffect(() => {
-    const newSocket = io(`http://0.0.0.0:3004/`)
+    const newSocket = io(window.location.host)
     const webSocketClient = new WebSocketClient(io, newSocket, dispatch)
     setSocket(webSocketClient);
     return () => webSocketClient.close()

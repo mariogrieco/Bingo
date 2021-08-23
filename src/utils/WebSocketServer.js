@@ -113,7 +113,7 @@ export default class WebSocketServer {
 
           if (winner) {
             console.log('gano!')
-            memory = { ...initialState, count: memory.count, running: false }
+            memory = { ...initialState, count: 0, running: false }
             this.winner(key)
             this.gameTime(false)
             this.gameWait(false)

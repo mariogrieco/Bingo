@@ -16,10 +16,26 @@ const Home = () => {
   }, [socket])
 
   useEffect(() => {
-    const newSocket = io(window.location.host)
+    const newSocket = io('http://0968-186-90-102-60.ngrok.io', {
+      cors: {
+        origin: "*",
+      }
+    });
     const webSocketClient = new WebSocketClient(io, newSocket, dispatch)
     setSocket(webSocketClient);
     return () => webSocketClient.close()
+  }, [])
+
+  React.useEffect(async () => {
+      try {
+        const data = await fetch('http://0968-186-90-102-60.ngrok.io/api/bingo', {
+          method: 'POST',
+          "action": "join"
+        })
+        console.log('data: ', data)
+      } catch (ex) {
+        console.log(ex)
+      }
   }, [])
 
   return (
